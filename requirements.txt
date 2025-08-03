@@ -1,0 +1,21 @@
+# local package
+
+
+# external requirements
+streamlit
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+optuna
+dask
+graphviz
+xgboost
+dagshub
+mlflow
+awscli
+
+
+-e .
+
