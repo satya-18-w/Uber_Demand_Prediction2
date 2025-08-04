@@ -64,7 +64,7 @@ def main():
     logger.info("Data read successfully")
     
     # read the parameters
-    mini_batch_params = safe_load(open(root_path / "params.yaml"))["extract_features"]["mini_batch_kmeans"]
+    mini_batch_params = safe_load(open(root_path / "params.yaml"))["build_features"]["mini_batch_kmeans"]
     print("Parameters for clustering are ", mini_batch_params)
     
     # train the kmeans model
@@ -116,8 +116,8 @@ def main():
     epsilon_val = 10
     resampled_data.replace({'total_pickups': {0 : epsilon_val}}, inplace=True)
     
-    # read the alpha parameters
-    ewma_params = safe_load(open(root_path /"params.yaml"))["extract_features"]["ewma"]
+    
+    ewma_params = safe_load(open(root_path /"params.yaml"))["build_features"]["ewma"]
     print("Parameters for EWMA are ", ewma_params)    
     
     # calculate avg pickups using EWMA
@@ -136,3 +136,11 @@ def main():
     save_path = root_path / "data/processed/resampled_data.csv"
     resampled_data.to_csv(save_path, index=True)
     logger.info("Data saved successfully")
+    
+    
+    
+    
+    
+    
+if __name__ == "__main__":
+    main()
