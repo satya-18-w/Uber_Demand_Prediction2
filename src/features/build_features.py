@@ -93,6 +93,11 @@ def main():
     # save the cluster predictions in data
     df_final['region'] = cluster_predictions
     logger.info("Cluster predictions are added to data")
+    
+    plot_data_path=root_path / "data/external/plot_data.csv"
+    dt=df_final
+    dt.groupby("region").apply(lambda x: x.sample(500,replace=True)).reset_index(drop=True).drop(columns=["tpep_pickup_datetime"]).to_csv(plot_data_path)
+    
     # drop the latitude and logitude columns from data
     df_final = df_final.drop(columns=["pickup_latitude","pickup_longitude"])
     logger.info("Latitude and Longitude columns are dropped")

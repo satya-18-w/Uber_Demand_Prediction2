@@ -1,6 +1,3 @@
-numpy
-pandas
-mlflow==2.22.0
 dagshub
 dvc
 dvc[s3]
@@ -12,4 +9,5 @@ streamlit
 mlflow==2.22.0
 joblib
 awscli
+
 -e .

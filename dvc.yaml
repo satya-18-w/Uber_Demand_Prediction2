@@ -21,6 +21,7 @@ stages:
         
         - ./models/scaler.joblib
         - ./models/mb_kmeans.joblib
+        - ./data/external/plot_data.csv
 
 
     extract_feature:
@@ -47,3 +48,17 @@ stages:
         outs:
         - ./models/best_model.joblib
         - ./models/encoder.joblib
+        - ./reports/experiment_info.json
+
+    register_model:
+        cmd: python ./src/models/register_model.py 
+        deps:
+        - ./src/models/register_model.py
+
+        # outs:
+        
+
+        
+
+
+        

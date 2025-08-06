@@ -72,9 +72,9 @@ def main():
         
         with mlflow.start_run(nested=True) as child:
             
-            n_estimators_rf=trial.suggest_int("n_estimators_rf",10,100,step=10)
-            max_depth_rf=trial.suggest_int("max_depth_rf",3,15)
-            model=RandomForestRegressor(n_estimators=n_estimators_rf,max_depth=max_depth_rf,n_jobs=-1,random_state=42)
+            n_estimators=trial.suggest_int("n_estimators",10,100,step=10)
+            max_depth=trial.suggest_int("max_depth",3,15)
+            model=RandomForestRegressor(n_estimators=n_estimators,max_depth=max_depth,n_jobs=-1,random_state=42)
             mlflow.log_params(model.get_params())
             
             model.fit(X_train_encoded,y_train)
@@ -86,19 +86,23 @@ def main():
             return mape
     with mlflow.start_run(run_name="BEST_MODEL",nested=True) as parent:
         study=optuna.create_study(study_name="Model_selection",direction="minimize")
-        study.optimize(objective,n_trials=50,n_jobs=-1)
+        study.optimize(objective,n_trials=70,n_jobs=-1)
         mlflow.set_tag("author","Satyajit")
         mlflow.set_tag("Model","Random Forest")
         
         mlflow.log_params(study.best_params)
-        
+        logger.info(f"Best MAPE: {study.best_value}")
+        logger.info(f"Best Parameters: {study.best_params}")
         mlflow.log_metric("BEST_MAPE",study.best_value)
         best_model=RandomForestRegressor(**study.best_params)
         best_model.fit(X_train_encoded,y_train)
         y_pred=best_model.predict(X_test_encoded)
         mape=mean_absolute_percentage_error(y_test,y_pred)
         mlflow.log_metric("MAPE",mape)
-        signature=mlflow.modells.infer_signature(X_train_encoded,y_train)
+        
+        # Storing the best model
+        joblib.dump(best_model,model_path)
+        signature=mlflow.models.infer_signature(X_train_encoded,y_train)
         mlflow.sklearn.log_model(best_model,"Best_Model",signature=signature,input_example=X_train_encoded)
         train_df=mlflow.data.from_pandas(train)
         test_df=mlflow.data.from_pandas(test)
@@ -110,10 +114,14 @@ def main():
         joblib.dump(best_model,model_path)
         
         run_id=parent.info.run_id
-        model_uri=f"runs:/{run_id}/Model"
-        model_verision=mlflow.register_model(model_uri,"gredient_boosting_sklearn")
+        model_uri=f"runs:/{run_id}/model"
+        
         print(parent.info)
-        info={"run_id":run_id,"Model_path":"Model","model_uri":model_uri}
+        report_file = pathlib.Path("reports/experiment_info.json")
+
+        # Create the 'reports' directory if it doesn't exist
+        report_file.parent.mkdir(parents=True, exist_ok=True)
+        info={"run_id":run_id,"Model_path":"model","model_uri":model_uri}
         with open("reports/experiment_info.json","w") as f:
             
             

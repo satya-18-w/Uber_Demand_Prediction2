@@ -1,0 +1,141 @@
+name: CICD Pipeline
+
+on:
+    push : 
+      branches:
+       - main
+
+
+
+jobs:
+    integration:
+        name: Continous Integration
+        runs-on: ${{ matrix.os}}
+        strategy:
+            fail-fast: false
+
+            matrix:
+                os: [ubuntu-latest,macos-latest]
+
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Istalling Python Environment
+
+              uses: actions/setup-python@v5
+              
+              with:
+                python-version: 3.12
+            - name: Cache pip dependencies
+              uses: actions/cache@v3
+              with:
+                path: ~/.cache/pip
+                key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+                restore-keys: 
+                  ${{ runner.os }}-pip-
+
+
+            - name: Install Dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r dev_requirements.txt
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.AWS_REGION }}
+
+
+            - name: DVC Pull
+              run:
+                dvc pull
+
+
+            - name: Run DVC Pipeline
+              env:
+                DAGUHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+
+              run: |
+                dvc repro --run-cache
+
+            
+            - name: Test Model Registry
+              env:
+                DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+              run: |
+                pytest tests/test_model_registry.py
+
+            - name: Test Model Performance
+              env:
+                DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+              run: |
+                pytest tests/test_model_performance.py
+
+            - name: Promote Model
+              if: success()
+              env:
+                DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+              run: |
+                python promote_model.py
+    
+
+    Building_Docker_Image:
+      name: Build Docker Image Push to Ecr
+      runs-on: ubuntu-latest
+
+      steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Istalling Python Environment
+
+              uses: actions/setup-python@v5
+              
+              with:
+                python-version: 3.12
+            - name: Cache pip dependencies
+              uses: actions/cache@v3
+              with:
+                path: ~/.cache/pip
+                key: ${{ runner.os }}-pip-${{ hashFiles('**/dev_requirements.txt') }}
+                restore-keys: 
+                  ${{ runner.os }}-pip-
+
+
+            - name: Install Dependencies
+              run: |
+                python -m pip install --upgrade pip
+                pip install -r dev_requirements.txt
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.AWS_REGION }}
+
+
+            - name: Login to ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
+
+
+            - name: Build Docker Image
+              env:
+                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry}}
+                ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME}}
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                AWS_REGION: ${{ secrets.AWS_REGION }}
+                IMAGE_TAG: latest
+
+              run: |
+                docker build -t  $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+                docker push $ECR_REGISTRY/$ECR_REPOSITORY:IMAGE_TAG
+
+                echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+

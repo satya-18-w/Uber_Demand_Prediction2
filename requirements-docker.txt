@@ -1,0 +1,7 @@
+streamlit
+mlflow==2.22.0
+joblib
+numpy
+pandas
+scikit-learn
+dagshub
