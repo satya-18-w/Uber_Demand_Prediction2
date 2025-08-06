@@ -26,6 +26,7 @@ client = MlflowClient()
 
 # get the latest version of model in staging
 latest_versions = client.get_latest_versions(name=registered_model_name,stages=[stage])
+print(latest_versions)
 latest_model_version_staging = latest_versions[0].version
 
 # promotion stage
