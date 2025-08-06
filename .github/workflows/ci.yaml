@@ -83,7 +83,7 @@ jobs:
     
 
     Building_Docker_Image:
-      if: success()
+      needs: integration
       name: Build Docker Image Push to Ecr
       runs-on: ubuntu-latest
 

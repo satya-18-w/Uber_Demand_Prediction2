@@ -80,8 +80,8 @@ stages:
       size: 3138
     - path: ./reports/experiment_info.json
       hash: md5
-      md5: c3c816537cd29e530ca71e3e059d3415
-      size: 148
+      md5: e951754214b5a18e09e2524a17a3cde4
+      size: 241
   register_model:
     cmd: python ./src/models/register_model.py
     deps:
