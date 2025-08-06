@@ -2,7 +2,7 @@ build_features:
     mini_batch_kmeans:
       n_clusters: 30
       random_state: 42
-      n_init: 13
+      n_init: 15
 
     ewma:
       alpha: 0.43
