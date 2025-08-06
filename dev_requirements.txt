@@ -8,6 +8,7 @@ boto3
 streamlit
 mlflow==2.22.0
 joblib
+dask
 # awscli
 
 -e .
