@@ -59,7 +59,7 @@ jobs:
                 DAGUHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
               run: |
-                dvc repro --run-cache
+                dvc repro 
 
             
             - name: Test Model Registry
