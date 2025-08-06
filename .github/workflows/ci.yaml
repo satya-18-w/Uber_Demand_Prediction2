@@ -55,12 +55,12 @@ jobs:
                 dvc pull
 
 
-            - name: Run DVC Pipeline
-              env:
-                DAGUHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+            # - name: Run DVC Pipeline
+            #   env:
+            #     DAGUHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
 
-              run: |
-                dvc repro 
+            #   run: |
+            #     dvc repro 
 
             
             - name: Test Model Registry
