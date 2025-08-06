@@ -23,7 +23,7 @@ def load_model(run_info):
     model_name=run_info["model_name"]
     model_version=run_info["version"]
     model_uri = f"models:/{model_name}/{model_version}"
-    model = mlflow.pyfunc.load_model(model_uri)
+    model = mlflow.sklearn.load_model(model_uri)
     return model
     
 run_info_path="reports/experiment_info.json"
