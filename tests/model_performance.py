@@ -8,6 +8,7 @@ import joblib
 import pandas as pd
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn import set_config
+import joblib
 
 
 set_config(transform_output="pandas")
@@ -21,10 +22,11 @@ def load_model_information(file_path):
     return run_info
 
 
-model_path = load_model_information("reports/experiment_info.json")["model_uri"]
+# model_path = load_model_information("reports/experiment_info.json")["model_uri"]
 
 
-model = mlflow.sklearn.load_model(model_path)
+# model = mlflow.sklearn.load_model(model_path)
+model=joblib.load("models/best_model.joblib")
 
 
 current_path = Path(__file__)
