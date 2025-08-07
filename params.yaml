@@ -5,4 +5,4 @@ build_features:
       n_init: 15
 
     ewma:
-      alpha: 0.45
+      alpha: 0.456
