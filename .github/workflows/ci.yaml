@@ -154,3 +154,17 @@ jobs:
                 echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
 
+            - name: Deploy to ECR
+              uses: aws-actions/aws-ecr-docker-login@v2
+              
+              with:
+                registry: ${{ secrets.ECR_REGISTRY}}
+                username: ${{ secrets.AWS_ACCESS_KEY_ID}}
+                password: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+                region: ${{ secrets.AWS_REGION}}
+
+ 
+
+
+
+

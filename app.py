@@ -11,6 +11,19 @@ import time as tt
 import pathlib
 import datetime as dt
 from sklearn.pipeline import Pipeline
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+
+DAGSHUB_USER = os.getenv("DAGSHUB_USER")
+DAGSHUB_TOKEN = os.getenv("DAGSHUB_TOKEN")
+
+# Authenticate with Dagshub
+dagshub.auth.add_app_token(
+    username=DAGSHUB_USER,
+    token=DAGSHUB_TOKEN
+)
 
 dagshub.init(repo_owner='satyajitsamal198076', repo_name='Uber_Demand_Prediction2', mlflow=True)
 
