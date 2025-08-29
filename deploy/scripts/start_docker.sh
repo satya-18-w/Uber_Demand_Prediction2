@@ -17,4 +17,4 @@ if [ "$(docker ps -aq -f name=my-app)" ]; then
 fi
 
 # Run a new container
-docker run -d -p 8000:8000 -e DAGSHUB_TOKEN="25476b0cf1226d6672acb8c6d26ef034715e6dc9" -e  DAGSHUB_USER="satyajitsamal198076"  --name my-app 051826734860.dkr.ecr.ap-southeast-2.amazonaws.com/campusx_ecr:latest
+docker run -d -p 8000:8000 -e DAGSHUB_TOKEN="25476b0cf1226d6672acb8c6d26ef034715e6dc9" -e  DAGSHUB_USER="satyajitsamal198076"  --name my-app 525102257214.dkr.ecr.us-east-1.amazonaws.com/demand1:latest
